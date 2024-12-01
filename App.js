@@ -12,6 +12,7 @@ import Perfil from './src/components/Perfil'
 import Mapa from './src/components/Mapa';
 import { createStackNavigator } from '@react-navigation/stack';
 import RegistrarLugar from './src/components/RegistrarLugar';
+import MapaUsuario from './src/components/MapaUsuario';
 
 
 export default function App() {
@@ -114,7 +115,10 @@ function LoggedInTabs({ user }) {
 // Componentes de cada pantalla
 function AltasScreen({ navigation }) {
   return (
-    <Mapa navigation={navigation}/>
+    //Mapa para ver descripcion de los lugares
+    <MapaUsuario navigation={navigation}/> 
+    //mapa del que Registra
+    //<Mapa/> 
   );
 }
 
