@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image} from 'react
 import React, { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import { validateEmail } from '../utils/validation'
-import { getAuth, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
+import { getAuth, updateProfile, updateEmail, updatePassword, updatePhoneNumber } from 'firebase/auth';
 
 export default function Perfil({logout,user}) {
 
@@ -67,7 +67,7 @@ export default function Perfil({logout,user}) {
           if (profileImage) {
             setProfileImage(user.photoURL);
             await updateProfile(user, { displayName: profileData.name, photoURL: profileImage });
-            console.log(profileImage)
+            
           } else {
             await updateProfile(user, { displayName: profileData.name });
           }
@@ -79,6 +79,10 @@ export default function Perfil({logout,user}) {
 
           if (profileData.password) {
             await updatePassword(user, profileData.password);
+          }
+
+          if (profileData.phoneNumber) {
+            await updatePhoneNumber(user, profileData.phone);
           }
 
           console.log('Perfil actualizado correctamente');
@@ -114,13 +118,7 @@ export default function Perfil({logout,user}) {
     value={profileData.name}
     onChange={e => setProfileData({...profileData,name:e.nativeEvent.text})}
     />
-    <Text style={styles.text}>Telefono</Text>
-    <TextInput
-    style={styles.inputtext}
-    value={profileData.phone}
-    keyboardType="phone-pad"
-    onChange={e => setProfileData({...profileData,phone:e.nativeEvent.text})}
-    />
+    
     <Text style={styles.text}>E-mail</Text>
     <TextInput
     style={styles.inputtext}

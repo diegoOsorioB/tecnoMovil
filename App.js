@@ -75,7 +75,7 @@ function LoggedInTabs({ user }) {
                   case 'Eliminar':
                     iconName = focused ? 'trash' : 'trash-outline';
                     break;
-                  case 'Modificar':
+                  case 'Info':
                     iconName = focused ? 'create' : 'create-outline';
                     break;
                   case 'Perfil':
@@ -93,8 +93,7 @@ function LoggedInTabs({ user }) {
             })}
           >
             <Tab.Screen name="Altas" component={AltasScreen} />
-            <Tab.Screen name="Eliminar" component={EliminarScreen} />
-            <Tab.Screen name="Modificar" component={ModificarScreen} />
+            <Tab.Screen name="Info" component={ModificarScreen} />
             <Tab.Screen
               name="Perfil"
               children={() => <PerfilScreen logout={logout} user={user} />}
@@ -127,11 +126,9 @@ function EliminarScreen() {
   );
 }
 
-function ModificarScreen() {
+function ModificarScreen({navigation}) {
   return (
-    <View style={styles3.container}>
-      <Text>Pantalla de Modificar</Text>
-    </View>
+  <></>
   );
 }
 
