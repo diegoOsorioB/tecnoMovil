@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function Mapa() {
+export default function Mapa({ navigation }) { // Recibe navigation como prop
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [selectedLocation, setSelectedLocation] = useState(null);
@@ -22,6 +23,13 @@ export default function Mapa() {
         })();
     }, []);
 
+    // Limpiar la selección al regresar a la pantalla
+    useFocusEffect(
+        React.useCallback(() => {
+            setSelectedLocation();
+        }, [])
+    );
+
     if (!location) {
         return (
             <View style={styles.loadingContainer}>
@@ -34,68 +42,53 @@ export default function Mapa() {
     const handleMapPress = (event) => {
         const { latitude, longitude } = event.nativeEvent.coordinate;
         setSelectedLocation({ latitude, longitude });
+        navigation.navigate('RegistrarLugar', {location:{latitude,longitude}})
     };
 
     return (
-            <MapView
-                style={styles.map}
-                initialRegion={{
+        <MapView
+            style={styles.map}
+            initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+            }}
+            customMapStyle={[
+                {
+                    featureType: 'poi',
+                    stylers: [{ visibility: 'off' }],
+                },
+                {
+                    featureType: 'poi.business',
+                    stylers: [{ visibility: 'off' }],
+                },
+            ]}
+            onPress={handleMapPress}
+        >
+            <Marker
+                coordinate={{
                     latitude: location.latitude,
                     longitude: location.longitude,
-                    latitudeDelta: 0.05,
-                    longitudeDelta: 0.05,
                 }}
-                customMapStyle={[
-                    {
-                        featureType: 'poi',
-                        stylers: [{ visibility: 'off' }],
-                    },
-                    {
-                        featureType: 'poi.business',
-                        stylers: [{ visibility: 'off' }],
-                    },
-                ]}
-                onPress={handleMapPress}
-            >
+                title="Ubicación actual"
+                description="Este es tu punto inicial"
+            />
+            {selectedLocation && (
                 <Marker
                     coordinate={{
-                        latitude: location.latitude,
-                        longitude: location.longitude,
+                        latitude: selectedLocation.latitude,
+                        longitude: selectedLocation.longitude,
                     }}
-                    title="Ubicación actual"
-                    description="Este es tu punto inicial"
+                    title="Ubicación seleccionada"
+                    description={`Latitud: ${selectedLocation.latitude}\nLongitud: ${selectedLocation.longitude}`}
                 />
-                {selectedLocation && (
-                    <Marker
-                        coordinate={{
-                            latitude: selectedLocation.latitude,
-                            longitude: selectedLocation.longitude,
-                        }}
-                        title="Ubicación seleccionada"
-                        description={`Latitud: ${selectedLocation.latitude}\nLongitud: ${selectedLocation.longitude}`}
-                    />
-                )}
-            </MapView>
-
-            <View style={styles.menu}>
-                <TouchableOpacity style={styles.boton}>
-                    <Text>Registrar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boton}>
-                    <Text>Boton</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boton}>
-                    <Text>Boton</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+            )}
+        </MapView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
     map: {
         flex: 1,
     },
@@ -104,19 +97,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    menu: {
-        position: 'absolute',
-        justifyContent: 'center',
-        alignItems:'center',
-        bottom: 20, // Ajusta según tu preferencia
-        left: 20,
-        right: 20,
-        backgroundColor: '#ffffff',
-        borderRadius: 10,
-        padding: 10,
-        elevation: 5, // Sombra para darle un efecto de profundidad
-    },
-    boton:{
-        backgroundColor:'#000'
-    }
 });

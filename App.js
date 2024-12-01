@@ -10,6 +10,9 @@ import Auth from './src/components/Auth';
 import Perfil from './src/components/Perfil'
 
 import Mapa from './src/components/Mapa';
+import { createStackNavigator } from '@react-navigation/stack';
+import RegistrarLugar from './src/components/RegistrarLugar';
+
 
 export default function App() {
   const [user, setUser] = useState(undefined); // Estado de autenticación
@@ -39,15 +42,15 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {user ? <LoggedInTabs user={user}/> : <Auth />}
+      {user ? <LoggedInTabs user={user} /> : <Auth />}
     </View>
   );
 }
 
 // Componente de Tabs cuando el usuario está autenticado
-function LoggedInTabs({user}) {
+function LoggedInTabs({ user }) {
   const Tab = createBottomTabNavigator();
-
+  const Stack = createStackNavigator();
   // Función para cerrar sesión
   const logout = () => {
     const auth = getAuth(app);
@@ -58,50 +61,61 @@ function LoggedInTabs({user}) {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-            switch (route.name) {
-              case 'Altas':
-                iconName = focused ? 'person-add' : 'person-add-outline';
-                break;
-              case 'Eliminar':
-                iconName = focused ? 'trash' : 'trash-outline';
-                break;
-              case 'Modificar':
-                iconName = focused ? 'create' : 'create-outline';
-                break;
-              case 'Perfil':
-                iconName = focused ? 'person-circle' : 'person-circle-outline';
-                break;
-              default:
-                iconName = 'help-circle-outline';
-            }
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: 'tomato',
-          tabBarInactiveTintColor: 'gray',
-        })}
-      >
-        <Tab.Screen name="Altas" component={AltasScreen} />
-        <Tab.Screen name="Eliminar" component={EliminarScreen} />
-        <Tab.Screen name="Modificar" component={ModificarScreen} />
-        <Tab.Screen 
-          name="Perfil" 
-          children={() => <PerfilScreen logout={logout} user={user} />} 
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator>
+      <Stack.Screen name="MainTabs" options={{ headerShown: false }}>
+        {() => (
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+                switch (route.name) {
+                  case 'Altas':
+                    iconName = focused ? 'person-add' : 'person-add-outline';
+                    break;
+                  case 'Eliminar':
+                    iconName = focused ? 'trash' : 'trash-outline';
+                    break;
+                  case 'Modificar':
+                    iconName = focused ? 'create' : 'create-outline';
+                    break;
+                  case 'Perfil':
+                    iconName = focused
+                      ? 'person-circle'
+                      : 'person-circle-outline';
+                    break;
+                  default:
+                    iconName = 'help-circle-outline';
+                }
+                return <Icon name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: 'tomato',
+              tabBarInactiveTintColor: 'gray',
+            })}
+          >
+            <Tab.Screen name="Altas" component={AltasScreen} />
+            <Tab.Screen name="Eliminar" component={EliminarScreen} />
+            <Tab.Screen name="Modificar" component={ModificarScreen} />
+            <Tab.Screen
+              name="Perfil"
+              children={() => <PerfilScreen logout={logout} user={user} />}
+            />
+          </Tab.Navigator>
+        )}
+      </Stack.Screen>
+      <Stack.Screen
+        name="RegistrarLugar"
+        component={RegistrarLugar}
+        options={{ title: 'Registro de Lugar' }}
+      />
+    </Stack.Navigator>
+  </NavigationContainer>
   );
 }
 
 // Componentes de cada pantalla
-function AltasScreen() {
+function AltasScreen({ navigation }) {
   return (
-    <View style={styles3.container}>
-      <Text>Pantalla de Altas</Text>
-    </View>
+    <Mapa navigation={navigation}/>
   );
 }
 
@@ -121,10 +135,10 @@ function ModificarScreen() {
   );
 }
 
-function PerfilScreen({logout,user}) {
+function PerfilScreen({ logout, user }) {
   return (
     <>
-    <Perfil logout={logout} user={user}/>
+      <Perfil logout={logout} user={user} />
     </>
   );
 }
@@ -140,16 +154,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  boton:{
-    backgroundColor:"#3cf",
-    fontSize:20,
-    marginTop:30,
-    borderWidth:1,
-    width:180,
-    textAlign:'center',
-    height:35,
-    borderRadius:15
-},
+  boton: {
+    backgroundColor: "#3cf",
+    fontSize: 20,
+    marginTop: 30,
+    borderWidth: 1,
+    width: 180,
+    textAlign: 'center',
+    height: 35,
+    borderRadius: 15
+  },
 });
 
 const styles3 = StyleSheet.create({
