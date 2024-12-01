@@ -1,10 +1,9 @@
 import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import app from '../utils/firebase'
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { validateEmail } from '../utils/validation'
-import moment from 'moment'
+
 
 
 export default function RegisterForm({ changeForm }) {
