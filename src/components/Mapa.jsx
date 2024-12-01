@@ -17,7 +17,6 @@ export default function Mapa() {
                 return;
             }
 
-            // Obtener la ubicación actual
             let loc = await Location.getCurrentPositionAsync({});
             setLocation(loc.coords);
         })();
@@ -38,7 +37,6 @@ export default function Mapa() {
     };
 
     return (
-        <View style={styles.container}>
             <MapView
                 style={styles.map}
                 initialRegion={{
