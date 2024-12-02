@@ -4,10 +4,11 @@ import { Picker } from '@react-native-picker/picker'; // Importa Picker
 import app from '../utils/firebase';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { validateEmail } from '../utils/validation';
+import { getFirestore, doc, setDoc } from 'firebase/firestore'
 
 export default function RegisterForm({ changeForm }) {
   const [formData, setFormData] = useState({
-    name:'',
+    displayName:'',
     email: '',
     password: '',
     repeatPassword: '',
@@ -18,12 +19,12 @@ export default function RegisterForm({ changeForm }) {
 
   const register = () => {
     let errors = {};
-    if (!formData.email || !formData.password || !formData.repeatPassword || !formData.name) {
+    if (!formData.email || !formData.password || !formData.repeatPassword || !formData.displayName) {
       console.log('Algun campo está vacío');
       if (!formData.email) errors.email = true;
       if (!formData.password) errors.password = true;
       if (!formData.repeatPassword) errors.repeatPassword = true;
-      if (!formData.name) errors.name = true;
+      if (!formData.displayName) errors.displayName = true;
     } else if (!validateEmail(formData.email)) {
       errors.email = true;
     } else if (formData.password !== formData.repeatPassword) {
@@ -34,16 +35,29 @@ export default function RegisterForm({ changeForm }) {
       errors.repeatPassword = true;
     } else {
       const auth = getAuth(app);
+      const db = getFirestore(app);
       createUserWithEmailAndPassword(auth, formData.email, formData.password)
         .then((userCredential) => {
           const user = userCredential.user;
+
+          setDoc(doc(db, "users", user.uid), {
+            name: formData.displayName,
+            email: formData.email,
+            role: formData.role,
+          }).then(() => {
+            console.log("Rol del usuario guardado correctamente.");
+          })
+
           console.log('Usuario creado con rol:', formData.role);
           console.log(user);
         })
         .catch((error) => {
           console.error(error.code, error.message);
         });
+        
       console.log(formData);
+
+      
     }
     setFormErrors(errors);
     console.log(errors);
@@ -52,10 +66,10 @@ export default function RegisterForm({ changeForm }) {
   return (
     <>
       <TextInput
-        style={[styles.input, formErrors.name && styles.error]}
+        style={[styles.input, formErrors.displayName && styles.error]}
         placeholder="Nombre"
         placeholderTextColor="#969696"
-        onChange={(e) => setFormData({ ...formData, name: e.nativeEvent.text })}
+        onChange={(e) => setFormData({ ...formData, displayName: e.nativeEvent.text })}
       />
       <TextInput
         style={[styles.input, formErrors.email && styles.error]}

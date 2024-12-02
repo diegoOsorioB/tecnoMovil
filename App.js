@@ -8,7 +8,7 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import app from './src/utils/firebase';
 import Auth from './src/components/Auth';
 import Perfil from './src/components/Perfil'
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import Mapa from './src/components/Mapa';
 import { createStackNavigator } from '@react-navigation/stack';
 import RegistrarLugar from './src/components/RegistrarLugar';
@@ -19,29 +19,28 @@ import Reseñas from './src/components/Reseñas';
 export default function App() {
   const [user, setUser] = useState(undefined); // Estado de autenticación
 
-  const db = getFirestore(app);
-
-const saveUserRole = async (userId, role) => {
-  try {
-    await setDoc(doc(db, "users", userId), { role });
-    console.log("Rol del usuario guardado");
-  } catch (error) {
-    console.error("Error al guardar el rol:", error);
-  }
-};
-
   useEffect(() => {
     const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const db = getFirestore(app);
+  
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setUser(user); // Usuario autenticado
-         setUser({ ...user, role });
-        console.log(user.email)
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUser({ ...user, role: userData.role }); // Guardar rol en el estado
+          } else {
+            console.error("Documento de usuario no encontrado");
+          }
+        } catch (error) {
+          console.error("Error al obtener rol del usuario:", error);
+        }
       } else {
-        setUser(false); // Usuario no autenticado
+        setUser(false);
       }
     });
-
+  
     return unsubscribe; // Limpieza del listener
   }, []);
 
