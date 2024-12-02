@@ -134,7 +134,7 @@ function AltasScreen({ navigation, route }) {
   const { user } = route.params; // Recibe el usuario como parámetro
 console.log('EL rol es ',user.role)
   return user?.role === 'Cliente' ? (
-    <Mapa />
+    <Mapa navigation={navigation}/>
   ) : (
     <MapaUsuario navigation={navigation} />
   );
