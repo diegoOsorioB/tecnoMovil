@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // Importa autenticación
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import app from '../utils/firebase'; // Ajusta la ruta si tu configuración está en otro lugar
+import axios from 'axios'; // Para subir a Imgur
+import app from '../utils/firebase'; // Ajusta la ruta según tu configuración
 
 const db = getFirestore(app);
+const auth = getAuth(app); // Inicializa la autenticación
 
 export default function RegistrarLugar({ route }) {
   const { location: initialLocation } = route.params || {};
@@ -15,6 +18,7 @@ export default function RegistrarLugar({ route }) {
   const [location, setLocation] = useState(initialLocation);
   const [loadingLocation, setLoadingLocation] = useState(!initialLocation);
   const [imageUri, setImageUri] = useState(null);
+  const [uploading, setUploading] = useState(false); // Para indicar si se está cargando la imagen
 
   useEffect(() => {
     if (!initialLocation) {
@@ -54,6 +58,33 @@ export default function RegistrarLugar({ route }) {
     }
   };
 
+  const uploadImageToImgur = async (imageUri) => {
+    const clientId = '75c914ce9afcc6a'; // Sustituye con tu Client ID de Imgur
+    const formData = new FormData();
+    formData.append('image', {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'upload.jpg',
+    });
+
+    try {
+      setUploading(true);
+      const response = await axios.post('https://api.imgur.com/3/image', formData, {
+        headers: {
+          Authorization: `Client-ID ${clientId}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setUploading(false);
+      return response.data.data.link; // Devuelve la URL de la imagen subida
+    } catch (error) {
+      setUploading(false);
+      console.error("Error al subir imagen a Imgur:", error);
+      Alert.alert("Error", "No se pudo cargar la imagen.");
+      throw error;
+    }
+  };
+
   const registrarLugar = async () => {
     if (!nombre || !horarios || !descripcion || !location || !imageUri) {
       Alert.alert(
@@ -63,7 +94,14 @@ export default function RegistrarLugar({ route }) {
       return;
     }
 
+    const currentUser = auth.currentUser; // Obtén el usuario autenticado
+    if (!currentUser) {
+      Alert.alert("Error", "No se pudo autenticar al usuario.");
+      return;
+    }
+
     try {
+      const imageUrl = await uploadImageToImgur(imageUri); // Sube la imagen y obtén la URL
       await addDoc(collection(db, "lugares"), {
         nombre,
         horarios,
@@ -72,7 +110,8 @@ export default function RegistrarLugar({ route }) {
           latitud: location.latitude,
           longitud: location.longitude,
         },
-        imagen: imageUri,
+        imagen: imageUrl, // Guarda la URL pública en Firestore
+        uid_usuario: currentUser.uid, // Agrega el UID del usuario
         fechaRegistro: new Date(),
       });
       Alert.alert("Éxito", "Lugar registrado correctamente.");
@@ -122,9 +161,13 @@ export default function RegistrarLugar({ route }) {
         onChangeText={setDescripcion}
       />
 
-      <TouchableOpacity onPress={registrarLugar}>
-        <Text style={styles.boton}>Registrar este lugar</Text>
-      </TouchableOpacity>
+      {uploading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <TouchableOpacity onPress={registrarLugar}>
+          <Text style={styles.boton}>Registrar este lugar</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
