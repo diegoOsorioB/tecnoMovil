@@ -44,21 +44,7 @@ export default function Perfil({logout,user}) {
   const update = async () => {
     let errors = {};
 
-    if (!profileData.email || !profileData.phone || !profileData.name) {
-      console.log('Algun campo esta vacio');
-      if (!profileData.name) errors.name = true;
-      if (!profileData.password) errors.password = true;
-      if (!profileData.repeatPassword) errors.repeatPassword = true;
-      if (!profileData.phone) errors.phone = true;
-    } else if (!validateEmail(profileData.email)) {
-      errors.email = true;
-    } else if (profileData.password !== profileData.repeatPassword) {
-      errors.password = true;
-      errors.repeatPassword = true;
-    } else if (profileData.password.length < 6) {
-      errors.password = true;
-      errors.repeatPassword = true;
-    } else {
+    
       try {
         const auth = getAuth();
         const user = auth.currentUser;
@@ -81,9 +67,7 @@ export default function Perfil({logout,user}) {
             await updatePassword(user, profileData.password);
           }
 
-          if (profileData.phoneNumber) {
-            await updatePhoneNumber(user, profileData.phone);
-          }
+        
 
           console.log('Perfil actualizado correctamente');
         }
@@ -95,7 +79,7 @@ export default function Perfil({logout,user}) {
           errors.password = true;
         }
       }
-    }
+    
     setFromErrors(errors);
     console.log(errors);
   }

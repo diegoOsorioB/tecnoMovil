@@ -8,7 +8,7 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import app from './src/utils/firebase';
 import Auth from './src/components/Auth';
 import Perfil from './src/components/Perfil'
-
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import Mapa from './src/components/Mapa';
 import { createStackNavigator } from '@react-navigation/stack';
 import RegistrarLugar from './src/components/RegistrarLugar';
@@ -19,11 +19,23 @@ import Reseñas from './src/components/Reseñas';
 export default function App() {
   const [user, setUser] = useState(undefined); // Estado de autenticación
 
+  const db = getFirestore(app);
+
+const saveUserRole = async (userId, role) => {
+  try {
+    await setDoc(doc(db, "users", userId), { role });
+    console.log("Rol del usuario guardado");
+  } catch (error) {
+    console.error("Error al guardar el rol:", error);
+  }
+};
+
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user); // Usuario autenticado
+         setUser({ ...user, role });
         console.log(user.email)
       } else {
         setUser(false); // Usuario no autenticado
@@ -94,7 +106,7 @@ function LoggedInTabs({ user }) {
               tabBarInactiveTintColor: 'gray',
             })}
           >
-            <Tab.Screen name="Altas" component={AltasScreen} />
+            <Tab.Screen name="Altas" component={AltasScreen} initialParams={{user}} />
             <Tab.Screen name="Info" component={ModificarScreen} />
             <Tab.Screen
               name="Perfil"
@@ -119,12 +131,13 @@ function LoggedInTabs({ user }) {
 }
 
 // Componentes de cada pantalla
-function AltasScreen({ navigation }) {
-  return (
-    //Mapa para ver descripcion de los lugares
-    <MapaUsuario navigation={navigation}/> 
-    //mapa del que Registra
-    //<Mapa/> 
+function AltasScreen({ navigation, route }) {
+  const { user } = route.params; // Recibe el usuario como parámetro
+console.log('EL rol es ',user.role)
+  return user?.role === 'Cliente' ? (
+    <Mapa />
+  ) : (
+    <MapaUsuario navigation={navigation} />
   );
 }
 
