@@ -43,46 +43,47 @@ export default function Perfil({logout,user}) {
 
   const update = async () => {
     let errors = {};
-
-    
-      try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-
-        if (user) {
-          if (profileImage) {
-            setProfileImage(user.photoURL);
-            await updateProfile(user, { displayName: profileData.name, photoURL: profileImage });
-            
-          } else {
-            await updateProfile(user, { displayName: profileData.name });
-          }
-
-
-          if (profileData.email !== user.email) {
-            await updateEmail(user, profileData.email);
-          }
-
-          if (profileData.password) {
-            await updatePassword(user, profileData.password);
-          }
-
-        
-
-          console.log('Perfil actualizado correctamente');
+  
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+  
+      if (currentUser) {
+        if (profileImage) {
+          await updateProfile(currentUser, {
+            displayName: profileData.name,
+            photoURL: profileImage,
+          });
+        } else {
+          await updateProfile(currentUser, {
+            displayName: profileData.name,
+          });
         }
-      } catch (error) {
-        console.log('Error al actualizar el perfil:', error);
-        if (error.code === 'auth/email-already-in-use') {
-          errors.email = true;
-        } else if (error.code === 'auth/weak-password') {
-          errors.password = true;
+        if (profileData.email !== currentUser.email) {
+          await updateEmail(currentUser, profileData.email);
         }
+  
+        // Actualizar contraseña si se proporciona
+        if (profileData.password) {
+          await updatePassword(currentUser, profileData.password);
+        }
+  
+        console.log('Perfil actualizado correctamente');
       }
-    
+    } catch (error) {
+      console.log('Error al actualizar el perfil:', error);
+
+      if (error.code === 'auth/email-already-in-use') {
+        errors.email = true;
+      } else if (error.code === 'auth/weak-password') {
+        errors.password = true;
+      }
+    }
+  
     setFromErrors(errors);
     console.log(errors);
-  }
+  };
+  
 
   return (
    <View style={styles.container}>

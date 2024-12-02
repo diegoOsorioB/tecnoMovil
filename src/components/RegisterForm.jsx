@@ -36,12 +36,11 @@ export default function RegisterForm({ changeForm }) {
     } else {
       const auth = getAuth(app);
       const db = getFirestore(app);
-      createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      createUserWithEmailAndPassword(auth, formData.email, formData.password,formData.displayName)
         .then((userCredential) => {
           const user = userCredential.user;
 
           setDoc(doc(db, "users", user.uid), {
-            name: formData.displayName,
             email: formData.email,
             role: formData.role,
           }).then(() => {
