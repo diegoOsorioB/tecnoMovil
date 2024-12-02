@@ -49,30 +49,42 @@ export default function Perfil({logout,user}) {
       const currentUser = auth.currentUser;
   
       if (currentUser) {
-        if (profileImage) {
-          await updateProfile(currentUser, {
-            displayName: profileData.name,
-            photoURL: profileImage,
-          });
-        } else {
-          await updateProfile(currentUser, {
-            displayName: profileData.name,
-          });
+        const updates = {};
+  
+        // Actualizar nombre y foto de perfil si hay cambios
+        if (profileData.name !== currentUser.displayName) {
+          updates.displayName = profileData.name;
         }
+  
+        if (profileImage && profileImage !== currentUser.photoURL) {
+          updates.photoURL = profileImage;
+        }
+  
+        // Si hay cambios en la imagen o el nombre, los actualizamos
+        if (Object.keys(updates).length > 0) {
+          await updateProfile(currentUser, updates);
+        }
+  
+        // Verificar si el correo ha cambiado
         if (profileData.email !== currentUser.email) {
           await updateEmail(currentUser, profileData.email);
         }
   
-        // Actualizar contraseña si se proporciona
-        if (profileData.password) {
-          await updatePassword(currentUser, profileData.password);
+        // Verificar si la contraseña ha cambiado y es válida
+        if (profileData.password && profileData.password.length >= 6) {
+          if (profileData.password !== profileData.repeatPassword) {
+            errors.password = true;
+            errors.repeatPassword = true;
+          } else {
+            await updatePassword(currentUser, profileData.password);
+          }
         }
   
         console.log('Perfil actualizado correctamente');
       }
     } catch (error) {
       console.log('Error al actualizar el perfil:', error);
-
+  
       if (error.code === 'auth/email-already-in-use') {
         errors.email = true;
       } else if (error.code === 'auth/weak-password') {

@@ -2,13 +2,13 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker'; // Importa Picker
 import app from '../utils/firebase';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { validateEmail } from '../utils/validation';
 import { getFirestore, doc, setDoc } from 'firebase/firestore'
 
 export default function RegisterForm({ changeForm }) {
   const [formData, setFormData] = useState({
-    displayName:'',
+    displayName: '',
     email: '',
     password: '',
     repeatPassword: '',
@@ -36,16 +36,28 @@ export default function RegisterForm({ changeForm }) {
     } else {
       const auth = getAuth(app);
       const db = getFirestore(app);
-      createUserWithEmailAndPassword(auth, formData.email, formData.password,formData.displayName)
+      createUserWithEmailAndPassword(auth, formData.email, formData.password)
         .then((userCredential) => {
           const user = userCredential.user;
 
+          // Actualiza el nombre del usuario después de la creación
+          updateProfile(user, { displayName: formData.displayName })
+            .then(() => {
+              console.log("Nombre de usuario actualizado correctamente.");
+            })
+            .catch((error) => {
+              console.error("Error al actualizar el nombre:", error);
+            });
+
+          // Guardar el rol en Firestore
           setDoc(doc(db, "users", user.uid), {
             email: formData.email,
             role: formData.role,
           }).then(() => {
             console.log("Rol del usuario guardado correctamente.");
-          })
+          }).catch((error) => {
+            console.error("Error al guardar el rol:", error);
+          });
 
           console.log('Usuario creado con rol:', formData.role);
           console.log(user);
@@ -53,10 +65,6 @@ export default function RegisterForm({ changeForm }) {
         .catch((error) => {
           console.error(error.code, error.message);
         });
-        
-      console.log(formData);
-
-      
     }
     setFormErrors(errors);
     console.log(errors);
@@ -90,16 +98,15 @@ export default function RegisterForm({ changeForm }) {
         secureTextEntry
         onChange={(e) => setFormData({ ...formData, repeatPassword: e.nativeEvent.text })}
       />
-      
         
-        <Picker
-          selectedValue={formData.role}
-          onValueChange={(value) => setFormData({ ...formData, role: value })}
-          style={styles.picker}
-        >
-          <Picker.Item label="Emprendedor" value="Emprendedor" />
-          <Picker.Item label="Usuario" value="Usuario" />
-        </Picker>
+      <Picker
+        selectedValue={formData.role}
+        onValueChange={(value) => setFormData({ ...formData, role: value })}
+        style={styles.picker}
+      >
+        <Picker.Item label="Emprendedor" value="Emprendedor" />
+        <Picker.Item label="Usuario" value="Usuario" />
+      </Picker>
       
       <TouchableOpacity onPress={register}>
         <Text style={styles.button}>Registrar</Text>

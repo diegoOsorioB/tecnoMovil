@@ -108,7 +108,7 @@ function LoggedInTabs({ user }) {
           >
             <Tab.Screen name="Altas" component={AltasScreen} initialParams={{user}} />
             {
-              user?.role==='Cliente'?<Tab.Screen name="Info" component={ModificarScreen}/>:
+              user?.role==='Emprendedor'?<Tab.Screen name="Info" component={ModificarScreen}/>:
               null
             }
             <Tab.Screen
@@ -137,7 +137,7 @@ function LoggedInTabs({ user }) {
 function AltasScreen({ navigation, route }) {
   const { user } = route.params; // Recibe el usuario como parámetro
 console.log('EL rol es ',user.role)
-  return user?.role === 'Cliente' ? (
+  return user?.role === 'Emprendedor' ? (
     <Mapa navigation={navigation}/>
   ) : (
     <MapaUsuario navigation={navigation} />
