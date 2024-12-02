@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Modal, Button } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Modal, Button, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import app from '../utils/firebase'; // Ajusta la ruta según tu configuración
-import * as Location from 'expo-location'; // Importamos expo-location para obtener la ubicación
+import app from '../utils/firebase';
+import * as Location from 'expo-location';
 
 const db = getFirestore(app);
 
 export default function MapaUsuario({ navigation }) {
-    const [places, setPlaces] = useState([]); // Lugares registrados
-    const [location, setLocation] = useState(null); // Ubicación del usuario
-    const [selectedPlace, setSelectedPlace] = useState(null); // Lugar seleccionado para mostrar en el modal
-    const [modalVisible, setModalVisible] = useState(false); // Estado de visibilidad del modal
+    const [places, setPlaces] = useState([]);
+    const [location, setLocation] = useState(null);
+    const [selectedPlace, setSelectedPlace] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    // Función para obtener los lugares de Firestore
     const fetchPlaces = async () => {
         try {
             const querySnapshot = await getDocs(collection(db, "lugares"));
@@ -27,7 +26,6 @@ export default function MapaUsuario({ navigation }) {
         }
     };
 
-    // Función para obtener la ubicación actual del usuario
     const fetchUserLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -36,23 +34,22 @@ export default function MapaUsuario({ navigation }) {
         }
 
         let location = await Location.getCurrentPositionAsync({});
-        setLocation(location.coords); // Establecer la ubicación del usuario
+        setLocation(location.coords);
     };
 
-    // Cargar lugares y ubicación al montar el componente
     useEffect(() => {
         fetchPlaces();
-        fetchUserLocation(); // Obtener la ubicación del usuario
+        fetchUserLocation();
     }, []);
 
     const handleMarkerPress = (place) => {
-        setSelectedPlace(place); // Establecer el lugar seleccionado
-        setModalVisible(true); // Mostrar el modal
+        setSelectedPlace(place);
+        setModalVisible(true);
     };
 
     const closeModal = () => {
-        setModalVisible(false); // Cerrar el modal
-        setSelectedPlace(null); // Limpiar el lugar seleccionado
+        setModalVisible(false);
+        setSelectedPlace(null);
     };
 
     if (!location || places.length === 0) {
@@ -64,13 +61,15 @@ export default function MapaUsuario({ navigation }) {
         );
     }
 
+   
+
     return (
         <View style={{ flex: 1 }}>
             <MapView
                 style={styles.map}
                 initialRegion={{
-                    latitude: location.latitude, // Usamos la ubicación del usuario
-                    longitude: location.longitude, // Usamos la ubicación del usuario
+                    latitude: location.latitude,
+                    longitude: location.longitude,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                 }}
@@ -85,7 +84,6 @@ export default function MapaUsuario({ navigation }) {
                     },
                 ]}
             >
-                {/* Marcadores para los lugares registrados en Firestore */}
                 {places.map((place) => (
                     <Marker
                         key={place.id}
@@ -95,12 +93,11 @@ export default function MapaUsuario({ navigation }) {
                         }}
                         title={place.nombre}
                         description={place.descripcion}
-                        onPress={() => handleMarkerPress(place)} // Manejador de evento para cuando se presiona el marcador
+                        onPress={() => handleMarkerPress(place)}
                     />
                 ))}
             </MapView>
 
-            {/* Modal para mostrar los detalles del lugar seleccionado */}
             {selectedPlace && (
                 <Modal
                     visible={modalVisible}
@@ -110,6 +107,13 @@ export default function MapaUsuario({ navigation }) {
                 >
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContent}>
+                            {selectedPlace.imagen && (
+                                <Image
+                                    source={{ uri: selectedPlace.imagen }}
+                                    style={styles.modalImage}
+                                    resizeMode="cover"
+                                />
+                            )}
                             <Text style={styles.modalTitle}>{selectedPlace.nombre}</Text>
                             <Text style={styles.modalDescription}>{selectedPlace.descripcion}</Text>
                             <Text style={styles.modalDescription}>{selectedPlace.horarios}</Text>
@@ -118,7 +122,7 @@ export default function MapaUsuario({ navigation }) {
                                 title="Reseñas"
                                 onPress={() => {
                                     closeModal();
-                                    navigation.navigate('Reseñas', { placeId: selectedPlace.id }); // Navegar a la pantalla de comentarios
+                                    navigation.navigate('Reseñas', { placeId: selectedPlace.id });
                                 }}
                             />
                         </View>
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semi-transparente
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
         backgroundColor: 'white',
@@ -150,6 +154,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: 300,
         alignItems: 'center',
+    },
+    modalImage: {
+        width: 250,
+        height: 150,
+        borderRadius: 10,
+        marginBottom: 10,
     },
     modalTitle: {
         fontSize: 18,
