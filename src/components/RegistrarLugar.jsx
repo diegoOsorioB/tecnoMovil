@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityInd
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
+import { getAuth } from 'firebase/auth'; // Asegúrate de importar getAuth
 import app from '../utils/firebase'; // Ajusta la ruta si tu configuración está en otro lugar
 
 const db = getFirestore(app);
@@ -15,6 +16,11 @@ export default function RegistrarLugar({ route }) {
   const [location, setLocation] = useState(initialLocation);
   const [loadingLocation, setLoadingLocation] = useState(!initialLocation);
   const [imageUri, setImageUri] = useState(null);
+
+  // Obtener el usuario actual con getAuth()
+  const auth = getAuth();
+  const currentUser = auth.currentUser;  // Ahora currentUser está correctamente definido
+  const userId = currentUser ? currentUser.uid : null;  // Acceder al UID del usuario
 
   useEffect(() => {
     if (!initialLocation) {
@@ -55,7 +61,7 @@ export default function RegistrarLugar({ route }) {
   };
 
   const registrarLugar = async () => {
-    if (!nombre || !horarios || !descripcion || !location || !imageUri) {
+    if (!nombre || !horarios || !descripcion || !location || !imageUri || !userId) {
       Alert.alert(
         "Error",
         "Por favor completa todos los campos, selecciona una imagen y asegúrate de que haya una ubicación disponible."
@@ -74,6 +80,7 @@ export default function RegistrarLugar({ route }) {
         },
         imagen: imageUri,
         fechaRegistro: new Date(),
+        userId,  // Usamos el userId correctamente
       });
       Alert.alert("Éxito", "Lugar registrado correctamente.");
     } catch (error) {

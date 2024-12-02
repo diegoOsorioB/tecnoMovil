@@ -14,6 +14,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import RegistrarLugar from './src/components/RegistrarLugar';
 import MapaUsuario from './src/components/MapaUsuario';
 import Reseñas from './src/components/Reseñas';
+import MostrarLugares from './src/components/ModificarLugares';
 
 
 export default function App() {
@@ -106,7 +107,10 @@ function LoggedInTabs({ user }) {
             })}
           >
             <Tab.Screen name="Altas" component={AltasScreen} initialParams={{user}} />
-            <Tab.Screen name="Info" component={ModificarScreen} />
+            {
+              user?.role==='Cliente'?<Tab.Screen name="Info" component={ModificarScreen}/>:
+              null
+            }
             <Tab.Screen
               name="Perfil"
               children={() => <PerfilScreen logout={logout} user={user} />}
@@ -148,9 +152,9 @@ function EliminarScreen() {
   );
 }
 
-function ModificarScreen({navigation}) {
+function ModificarScreen({ user }) {
   return (
-  <></>
+  <MostrarLugares/>
   );
 }
 
