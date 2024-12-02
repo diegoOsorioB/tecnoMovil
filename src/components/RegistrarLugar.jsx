@@ -86,7 +86,7 @@ export default function RegistrarLugar({ route }) {
   };
 
   const registrarLugar = async () => {
-    if (!nombre || !horarios || !descripcion || !location || !imageUri || !userId) {
+    if (!nombre || !horarios || !descripcion || !location || !imageUri) {
       Alert.alert(
         "Error",
         "Por favor completa todos los campos, selecciona una imagen y asegúrate de que haya una ubicación disponible."
@@ -113,7 +113,6 @@ export default function RegistrarLugar({ route }) {
         imagen: imageUrl, // Guarda la URL pública en Firestore
         uid_usuario: currentUser.uid, // Agrega el UID del usuario
         fechaRegistro: new Date(),
-        userId,  // Usamos el userId correctamente
       });
       Alert.alert("Éxito", "Lugar registrado correctamente.");
     } catch (error) {
