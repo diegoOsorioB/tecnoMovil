@@ -25,7 +25,7 @@ export default function MostrarLugares() {
       try {
         // Consultar los lugares de Firestore donde userId es igual al uid del usuario actual
         const lugaresRef = collection(db, "lugares");
-        const q = query(lugaresRef, where("userId", "==", uid));
+        const q = query(lugaresRef, where("uid_usuario", "==", uid));
         const querySnapshot = await getDocs(q);
         
         // Almacenar los resultados en el estado
