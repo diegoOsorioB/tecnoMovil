@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, TextInput } from 'react-native';
-import { getFirestore, doc, getDoc, collection, getDocs, addDoc } from 'firebase/firestore';
+import { View, Text, Button, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { getFirestore, doc, getDoc, collection, getDocs, addDoc, Timestamp } from 'firebase/firestore';
 import app from '../utils/firebase'; // Ajusta la ruta según tu configuración
 
 const db = getFirestore(app);
@@ -35,27 +35,29 @@ export default function Reseñas({ route, navigation }) {
         fetchPlaceData();
     }, [placeId]);
 
-    // Función para agregar un comentario
     const agregarComentario = async () => {
         if (nuevoComentario.trim() === '') return;
 
         const placeRef = doc(db, 'lugares', placeId);
         const nuevoComentarioData = {
-            usuario: 'Usuario Prueba', // Puedes reemplazarlo con el nombre del usuario autenticado
+            usuario: 'Usuario Prueba', // Nombre de usuario
             comentario: nuevoComentario,
-            fecha: new Date(),
+            fecha: Timestamp.fromDate(new Date()), // Convertir Date a Timestamp de Firebase
         };
 
         // Agregar el comentario a Firebase
-        await addDoc(collection(placeRef, 'comentarios'), nuevoComentarioData);
+        const docRef = await addDoc(collection(placeRef, 'comentarios'), nuevoComentarioData);
 
-        // Actualizar el estado local para reflejar el nuevo comentario
-        setComentarios(prevComentarios => [
+        // Actualizar el estado local con el nuevo comentario
+        setComentarios((prevComentarios) => [
             ...prevComentarios,
-            { ...nuevoComentarioData, id: Math.random().toString() }, // Agregar el nuevo comentario localmente
+            {
+                id: docRef.id,
+                ...nuevoComentarioData,
+            },
         ]);
 
-        setNuevoComentario(''); // Limpiar el campo de comentario
+        setNuevoComentario(''); // Limpiar el input
     };
 
     return (
@@ -66,8 +68,8 @@ export default function Reseñas({ route, navigation }) {
                     <Text>{place.descripcion}</Text>
                     <Text>{place.horarios}</Text>
 
-                    {/* Mostrar comentarios */}
-                    <View>
+                    {/* Mostrar comentarios dentro de ScrollView */}
+                    <ScrollView style={styles.scroll}>
                         {comentarios.length > 0 ? (
                             comentarios.map((comentario) => (
                                 <View key={comentario.id} style={styles.comentario}>
@@ -81,7 +83,7 @@ export default function Reseñas({ route, navigation }) {
                         ) : (
                             <Text>No hay comentarios aún.</Text>
                         )}
-                    </View>
+                    </ScrollView>
 
                     {/* Agregar nuevo comentario */}
                     <TextInput
@@ -103,13 +105,22 @@ export default function Reseñas({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start', // Cambiado para alinear el contenido hacia arriba
         alignItems: 'center',
         padding: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    scroll: {
+        width: '100%',
+        marginVertical: 20, // Separación del resto de elementos
+        maxHeight: 300, // Altura máxima para limitar el área desplazable
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 10,
     },
     comentario: {
         marginVertical: 10,
