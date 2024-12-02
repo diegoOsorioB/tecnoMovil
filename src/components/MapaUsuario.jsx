@@ -7,7 +7,7 @@ import * as Location from 'expo-location'; // Importamos expo-location para obte
 
 const db = getFirestore(app);
 
-export default function MapaUsuario() {
+export default function MapaUsuario({ navigation }) {
     const [places, setPlaces] = useState([]); // Lugares registrados
     const [location, setLocation] = useState(null); // Ubicación del usuario
     const [selectedPlace, setSelectedPlace] = useState(null); // Lugar seleccionado para mostrar en el modal
@@ -112,7 +112,15 @@ export default function MapaUsuario() {
                         <View style={styles.modalContent}>
                             <Text style={styles.modalTitle}>{selectedPlace.nombre}</Text>
                             <Text style={styles.modalDescription}>{selectedPlace.descripcion}</Text>
+                            <Text style={styles.modalDescription}>{selectedPlace.horarios}</Text>
                             <Button title="Cerrar" onPress={closeModal} />
+                            <Button
+                                title="Reseñas"
+                                onPress={() => {
+                                    closeModal();
+                                    navigation.navigate('Reseñas', { placeId: selectedPlace.id }); // Navegar a la pantalla de comentarios
+                                }}
+                            />
                         </View>
                     </View>
                 </Modal>

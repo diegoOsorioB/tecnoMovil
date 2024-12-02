@@ -13,6 +13,7 @@ import Mapa from './src/components/Mapa';
 import { createStackNavigator } from '@react-navigation/stack';
 import RegistrarLugar from './src/components/RegistrarLugar';
 import MapaUsuario from './src/components/MapaUsuario';
+import Reseñas from './src/components/Reseñas';
 
 
 export default function App() {
@@ -106,6 +107,11 @@ function LoggedInTabs({ user }) {
         name="RegistrarLugar"
         component={RegistrarLugar}
         options={{ title: 'Registro de Lugar' }}
+      />
+      <Stack.Screen
+        name="Reseñas"
+        component={Reseñas}
+        options={{ title: 'Reseñas' }}
       />
     </Stack.Navigator>
   </NavigationContainer>
