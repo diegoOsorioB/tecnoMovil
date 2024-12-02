@@ -12,7 +12,7 @@ export default function RegisterForm({ changeForm }) {
     email: '',
     password: '',
     repeatPassword: '',
-    role: 'Cliente',
+    role: 'Emprendedor',
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -97,7 +97,7 @@ export default function RegisterForm({ changeForm }) {
           onValueChange={(value) => setFormData({ ...formData, role: value })}
           style={styles.picker}
         >
-          <Picker.Item label="Cliente" value="Cliente" />
+          <Picker.Item label="Emprendedor" value="Emprendedor" />
           <Picker.Item label="Usuario" value="Usuario" />
         </Picker>
       
