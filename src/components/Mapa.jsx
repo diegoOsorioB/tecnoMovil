@@ -79,7 +79,7 @@ export default function Mapa({ navigation }) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Cargando mapa...</Text>
+                <Text style={styles.loadingText}>Cargando mapa...</Text>
             </View>
         );
     }
@@ -91,7 +91,7 @@ export default function Mapa({ navigation }) {
     return (
         <>
             <TouchableOpacity style={styles.boton} onPress={handleMapPress}>
-                <Text style={styles.texto}>Registrar Lugar</Text>
+                <Text style={styles.botonTexto}>Registrar Lugar</Text>
             </TouchableOpacity>
             <MapView
                 style={styles.map}
@@ -146,16 +146,34 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#f1f1f1',
+    },
+    loadingText: {
+        fontSize: 18,
+        color: '#555',
+        marginTop: 10,
     },
     boton: {
-        flex: 0.08,
+        position: 'absolute', // Botón flotante sobre el mapa
+        bottom: '90%',           // Ubicado a 30 unidades desde el fondo
+        left: '50%',          // Centrado horizontalmente
+        marginLeft: -100,     // Ajuste para centrar el botón
+        backgroundColor: '#3cb371', // Color verde suave
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        borderRadius: 30,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 10,
+        zIndex: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 20,
-        backgroundColor: '#9ed99e',
-        marginTop: 20,
     },
-    texto: {
-        fontSize: 20,
+    botonTexto: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });

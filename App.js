@@ -15,6 +15,7 @@ import RegistrarLugar from './src/components/RegistrarLugar';
 import MapaUsuario from './src/components/MapaUsuario';
 import Reseñas from './src/components/Reseñas';
 import MostrarLugares from './src/components/ModificarLugares';
+import ModifcarLugar from './src/components/ModifcarLugar';
 
 
 export default function App() {
@@ -108,7 +109,7 @@ function LoggedInTabs({ user }) {
           >
             <Tab.Screen name="Altas" component={AltasScreen} initialParams={{user}} />
             {
-              user?.role==='Cliente'?<Tab.Screen name="Info" component={ModificarScreen}/>:
+              user?.role==='Emprendedor'?<Tab.Screen name="Info" component={ModificarScreen}/>:
               null
             }
             <Tab.Screen
@@ -127,6 +128,11 @@ function LoggedInTabs({ user }) {
         name="Reseñas"
         component={Reseñas}
         options={{ title: 'Reseñas' }}
+      />
+      <Stack.Screen
+        name="ModifcarLugar"
+        component={ModifcarLugar}
+        options={{ title: 'ModifcarLugar' }}
       />
     </Stack.Navigator>
   </NavigationContainer>
@@ -152,9 +158,9 @@ function EliminarScreen() {
   );
 }
 
-function ModificarScreen({ user }) {
+function ModificarScreen({ user,navigation }) {
   return (
-  <MostrarLugares/>
+  <MostrarLugares navigation={navigation}/>
   );
 }
 

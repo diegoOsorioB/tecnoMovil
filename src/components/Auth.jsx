@@ -14,8 +14,8 @@ export default function Auth() {
   return (
     <View style={styles.view}>
         {islogin ? 
-        <Image style={styles.logo} source={require('../../assets/icon.png')} /> :
-        <Image style={styles.logo2} source={require('../../assets/icon.png')} />}
+        <Image style={styles.logo} source={require('../../assets/puesto-de-comida.png')} /> :
+        <Image style={styles.logo2} source={require('../../assets/puesto-de-comida.png')} />}
         {islogin ? <LoginForm changeForm={changeForm}/> : <RegisterForm changeForm={changeForm}/>}
     </View>
   )
