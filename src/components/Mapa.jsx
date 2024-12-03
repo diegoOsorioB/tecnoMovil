@@ -68,12 +68,7 @@ export default function Mapa({ navigation }) {
         }
     };
 
-    // Cargar lugares cada vez que la pantalla se enfoque
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchPlaces(); // Vuelve a cargar los lugares
-        }, [])
-    );
+    
 
     if (!location || !mapRegion) {
         return (
