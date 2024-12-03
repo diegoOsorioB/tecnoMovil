@@ -137,7 +137,7 @@ function LoggedInTabs({ user }) {
 function AltasScreen({ navigation, route }) {
   const { user } = route.params; // Recibe el usuario como parámetro
 console.log('EL rol es ',user.role)
-  return user?.role === 'Cliente' ? (
+  return user?.role === 'Emprendedor' ? (
     <Mapa navigation={navigation}/>
   ) : (
     <MapaUsuario navigation={navigation} />
