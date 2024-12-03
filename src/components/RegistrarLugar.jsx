@@ -142,30 +142,39 @@ export default function RegistrarLugar({ route }) {
           <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.text}>Nombre del lugar</Text>
-      <TextInput
-        style={styles.inputtext}
-        value={nombre}
-        onChangeText={setNombre}
-      />
-      <Text style={styles.text}>Horarios</Text>
-      <TextInput
-        style={styles.inputtext}
-        value={horarios}
-        onChangeText={setHorarios}
-      />
-      <Text style={styles.text}>Descripción</Text>
-      <TextInput
-        style={styles.inputtext}
-        value={descripcion}
-        onChangeText={setDescripcion}
-      />
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.text}>Nombre del lugar</Text>
+        <TextInput
+          style={styles.inputtext}
+          value={nombre}
+          onChangeText={setNombre}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.text}>Horarios</Text>
+        <TextInput
+          style={styles.inputtext}
+          value={horarios}
+          onChangeText={setHorarios}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.text}>Descripción</Text>
+        <TextInput
+          style={styles.inputtext}
+          value={descripcion}
+          onChangeText={setDescripcion}
+        />
+      </View>
 
       {uploading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <TouchableOpacity onPress={registrarLugar}>
-          <Text style={styles.boton}>Registrar este lugar</Text>
+        <TouchableOpacity onPress={registrarLugar} style={styles.boton}>
+          <Text style={styles.botonText}>Registrar este lugar</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -175,42 +184,64 @@ export default function RegistrarLugar({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 5,
+    padding: 20,
+    backgroundColor: '#f9f9f9',
   },
-  inputtext: {
-    height: 40,
-    width: '70%',
-    borderWidth: 1,
-    paddingLeft: 10,
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 16,
-    marginVertical: 5,
-  },
-  boton: {
-    backgroundColor: "#3cf",
-    fontSize: 20,
-    marginTop: 30,
-    borderWidth: 1,
-    paddingLeft: 20,
-    textAlign: 'center',
-    height: 40,
-    lineHeight: 35,
-    borderRadius: 15,
+  profileImageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   imagen: {
     width: 200,
     height: 200,
     borderRadius: 10,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
   imageButton: {
     backgroundColor: '#3cf',
-    paddingVertical: 5,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  imageButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  inputContainer: {
+    marginBottom: 20,
+    width: '80%',
+  },
+  inputtext: {
+    height: 45,
+    width: '100%',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingLeft: 10,
+    backgroundColor: '#fff',
+    fontSize: 16,
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: '#333',
+  },
+  boton: {
+    backgroundColor: '#3cf',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 10,
+    marginTop: 20,
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  botonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
