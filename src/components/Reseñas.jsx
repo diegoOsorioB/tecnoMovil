@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { getFirestore, doc, getDoc, collection, getDocs, addDoc, Timestamp } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth'; // Importa Firebase Authentication
-import app from '../utils/firebase'; // Ajusta la ruta según tu configuración
+import { getAuth } from 'firebase/auth'; 
+import app from '../utils/firebase'; 
 
 const db = getFirestore(app);
-const auth = getAuth(); // Obtén la instancia de autenticación
+const auth = getAuth(); 
 
 export default function Reseñas({ route, navigation }) {
-    const [place, setPlace] = useState(null); // Lugar seleccionado
-    const [comentarios, setComentarios] = useState([]); // Comentarios del lugar
-    const [nuevoComentario, setNuevoComentario] = useState(''); // Comentario nuevo
-    const { placeId } = route.params; // Recibimos el ID del lugar desde la navegación
+    const [place, setPlace] = useState(null); 
+    const [comentarios, setComentarios] = useState([]); 
+    const [nuevoComentario, setNuevoComentario] = useState(''); 
+    const { placeId } = route.params;
 
-    // Cargar los datos del lugar y los comentarios
+
+    
     useEffect(() => {
         const fetchPlaceData = async () => {
-            const placeRef = doc(db, 'lugares', placeId); // Referencia al lugar
+            const placeRef = doc(db, 'lugares', placeId); 
             const docSnap = await getDoc(placeRef);
             if (docSnap.exists()) {
-                setPlace(docSnap.data()); // Establecer los datos del lugar
+                setPlace(docSnap.data()); 
             } else {
                 console.log('No se encontró el lugar');
             }
 
-            // Obtener los comentarios
+            
             const comentariosRef = collection(placeRef, 'comentarios');
             const comentariosSnap = await getDocs(comentariosRef);
             const comentariosList = comentariosSnap.docs.map(doc => ({
@@ -36,26 +37,27 @@ export default function Reseñas({ route, navigation }) {
 
         fetchPlaceData();
     }, [placeId]);
+    
 
     const agregarComentario = async () => {
         if (nuevoComentario.trim() === '') return;
 
-        // Obtener el usuario autenticado
+        
         const user = auth.currentUser;
-        const usuarioNombre = user ? user.displayName || 'Usuario Anónimo' : 'Usuario Anónimo'; // Nombre del usuario
+        const usuarioNombre = user ? user.displayName || 'Usuario Anónimo' : 'Usuario Anónimo';
         console.log(user)
         console.log(user.displayName)
         const placeRef = doc(db, 'lugares', placeId);
         const nuevoComentarioData = {
-            usuario: usuarioNombre, // Usar el nombre del usuario autenticado
+            usuario: usuarioNombre, 
             comentario: nuevoComentario,
-            fecha: Timestamp.fromDate(new Date()), // Convertir Date a Timestamp de Firebase
+            fecha: Timestamp.fromDate(new Date()), 
         };
 
-        // Agregar el comentario a Firebase
+        
         const docRef = await addDoc(collection(placeRef, 'comentarios'), nuevoComentarioData);
 
-        // Actualizar el estado local con el nuevo comentario
+        
         setComentarios((prevComentarios) => [
             ...prevComentarios,
             {
@@ -64,7 +66,7 @@ export default function Reseñas({ route, navigation }) {
             },
         ]);
 
-        setNuevoComentario(''); // Limpiar el input
+        setNuevoComentario(''); 
     };
 
     return (
@@ -75,7 +77,7 @@ export default function Reseñas({ route, navigation }) {
                     <Text style={styles.description}>{place.descripcion}</Text>
                     <Text style={styles.hours}>Horarios: {place.horarios}</Text>
 
-                    {/* Mostrar comentarios dentro de ScrollView */}
+
                     <ScrollView style={styles.scroll}>
                         {comentarios.length > 0 ? (
                             comentarios.map((comentario) => (
@@ -92,7 +94,7 @@ export default function Reseñas({ route, navigation }) {
                         )}
                     </ScrollView>
 
-                    {/* Agregar nuevo comentario */}
+                    
                     <TextInput
                         style={styles.input}
                         placeholder="Deja tu comentario..."

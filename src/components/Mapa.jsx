@@ -3,18 +3,18 @@ import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from 'rea
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import app from '../utils/firebase'; // Ajusta la ruta según tu configuración
-import { useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
+import app from '../utils/firebase'; 
+import { useFocusEffect } from '@react-navigation/native';
 
 const db = getFirestore(app);
 
 export default function Mapa({ navigation }) {
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
-    const [mapRegion, setMapRegion] = useState(null); // Región actual de la cámara
-    const [places, setPlaces] = useState([]); // Lugares registrados
+    const [mapRegion, setMapRegion] = useState(null); 
+    const [places, setPlaces] = useState([]); 
 
-    // Obtener la ubicación actual
+   
     useEffect(() => {
         let locationSubscription;
         (async () => {
@@ -27,7 +27,7 @@ export default function Mapa({ navigation }) {
             let initialLocation = await Location.getCurrentPositionAsync({});
             setLocation(initialLocation.coords);
 
-            // Configuración inicial de la región del mapa
+            
             setMapRegion({
                 latitude: initialLocation.coords.latitude,
                 longitude: initialLocation.coords.longitude,
@@ -54,7 +54,7 @@ export default function Mapa({ navigation }) {
         };
     }, []);
 
-    // Función para obtener los lugares de Firestore
+    
     const fetchPlaces = async () => {
         try {
             const querySnapshot = await getDocs(collection(db, "lugares"));
@@ -68,10 +68,10 @@ export default function Mapa({ navigation }) {
         }
     };
 
-    // Cargar lugares cada vez que la pantalla se enfoque
+    
     useFocusEffect(
         React.useCallback(() => {
-            fetchPlaces(); // Vuelve a cargar los lugares
+            fetchPlaces(); 
         }, [])
     );
 
@@ -96,8 +96,8 @@ export default function Mapa({ navigation }) {
             <MapView
                 style={styles.map}
                 initialRegion={mapRegion}
-                onRegionChange={(region) => setMapRegion(region)} // Actualizar dinámicamente la región mientras la cámara se mueve
-                onRegionChangeComplete={(region) => setMapRegion(region)} // Finalizar la región cuando la cámara se detenga
+                onRegionChange={(region) => setMapRegion(region)} 
+                onRegionChangeComplete={(region) => setMapRegion(region)} 
                 customMapStyle={[
                     {
                         featureType: 'poi',
@@ -109,7 +109,7 @@ export default function Mapa({ navigation }) {
                     },
                 ]}
             >
-                {/* Marcador dinámico que sigue la posición de la cámara */}
+                
                 {mapRegion && (
                     <Marker
                         coordinate={{
@@ -121,7 +121,7 @@ export default function Mapa({ navigation }) {
                         pinColor="blue"
                     />
                 )}
-                {/* Marcadores para los lugares registrados en Firestore */}
+                
                 {places.map((place) => (
                     <Marker
                         key={place.id}
@@ -154,11 +154,11 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     boton: {
-        position: 'absolute', // Botón flotante sobre el mapa
-        bottom: '90%',           // Ubicado a 30 unidades desde el fondo
-        left: '50%',          // Centrado horizontalmente
-        marginLeft: -100,     // Ajuste para centrar el botón
-        backgroundColor: '#3cb371', // Color verde suave
+        position: 'absolute', 
+        bottom: '90%',           
+        left: '50%',         
+        marginLeft: -100,
+        backgroundColor: '#3cb371',
         paddingVertical: 15,
         paddingHorizontal: 40,
         borderRadius: 30,

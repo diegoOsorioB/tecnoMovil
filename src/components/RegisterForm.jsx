@@ -39,7 +39,7 @@ export default function RegisterForm({ changeForm }) {
         .then((userCredential) => {
           const user = userCredential.user;
 
-          // Actualiza el nombre del usuario después de la creación
+          
           updateProfile(user, { displayName: formData.displayName })
             .then(() => {
               console.log("Nombre de usuario actualizado correctamente.");
@@ -48,7 +48,7 @@ export default function RegisterForm({ changeForm }) {
               console.error("Error al actualizar el nombre:", error);
             });
 
-          // Guardar el rol en Firestore
+          
           setDoc(doc(db, "users", user.uid), {
             email: formData.email,
             role: formData.role,

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth"; // Importa autenticación
+import { getAuth } from "firebase/auth";
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios'; // Para subir a Imgur
-import app from '../utils/firebase'; // Ajusta la ruta según tu configuración
+import axios from 'axios'; 
+import app from '../utils/firebase';
 
 const db = getFirestore(app);
-const auth = getAuth(app); // Inicializa la autenticación
+const auth = getAuth(app);
 
 export default function RegistrarLugar({ route }) {
   const { location: initialLocation } = route.params || {};
@@ -18,7 +18,7 @@ export default function RegistrarLugar({ route }) {
   const [location, setLocation] = useState(initialLocation);
   const [loadingLocation, setLoadingLocation] = useState(!initialLocation);
   const [imageUri, setImageUri] = useState(null);
-  const [uploading, setUploading] = useState(false); // Para indicar si se está cargando la imagen
+  const [uploading, setUploading] = useState(false); 
 
   useEffect(() => {
     if (!initialLocation) {
@@ -59,7 +59,7 @@ export default function RegistrarLugar({ route }) {
   };
 
   const uploadImageToImgur = async (imageUri) => {
-    const clientId = '75c914ce9afcc6a'; // Sustituye con tu Client ID de Imgur
+    const clientId = '75c914ce9afcc6a'; 
     const formData = new FormData();
     formData.append('image', {
       uri: imageUri,
@@ -76,7 +76,7 @@ export default function RegistrarLugar({ route }) {
         },
       });
       setUploading(false);
-      return response.data.data.link; // Devuelve la URL de la imagen subida
+      return response.data.data.link; 
     } catch (error) {
       setUploading(false);
       console.error("Error al subir imagen a Imgur:", error);
@@ -94,14 +94,14 @@ export default function RegistrarLugar({ route }) {
       return;
     }
 
-    const currentUser = auth.currentUser; // Obtén el usuario autenticado
+    const currentUser = auth.currentUser; 
     if (!currentUser) {
       Alert.alert("Error", "No se pudo autenticar al usuario.");
       return;
     }
 
     try {
-      const imageUrl = await uploadImageToImgur(imageUri); // Sube la imagen y obtén la URL
+      const imageUrl = await uploadImageToImgur(imageUri); 
       await addDoc(collection(db, "lugares"), {
         nombre,
         horarios,
@@ -110,8 +110,8 @@ export default function RegistrarLugar({ route }) {
           latitud: location.latitude,
           longitud: location.longitude,
         },
-        imagen: imageUrl, // Guarda la URL pública en Firestore
-        uid_usuario: currentUser.uid, // Agrega el UID del usuario
+        imagen: imageUrl, 
+        uid_usuario: currentUser.uid, 
         fechaRegistro: new Date(),
       });
       Alert.alert("Éxito", "Lugar registrado correctamente.");

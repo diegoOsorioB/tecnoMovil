@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity }
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
 import app from '../utils/firebase';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Importa el ícono
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const db = getFirestore(app);
 
@@ -24,11 +24,11 @@ export default function MostrarLugares({ navigation }) {
     const lugaresRef = collection(db, "lugares");
     const q = query(lugaresRef, where("uid_usuario", "==", uid));
 
-    // Listener en tiempo real
+    
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const lugaresData = [];
       querySnapshot.forEach((doc) => {
-        lugaresData.push({ id: doc.id, ...doc.data() }); // Incluye el ID del documento
+        lugaresData.push({ id: doc.id, ...doc.data() }); 
       });
 
       setLugares(lugaresData);
@@ -38,7 +38,7 @@ export default function MostrarLugares({ navigation }) {
       setLoading(false);
     });
 
-    // Limpieza del listener al desmontar el componente
+  
     return () => unsubscribe();
   }, [uid]);
 
@@ -63,7 +63,7 @@ export default function MostrarLugares({ navigation }) {
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.lugarItem}
-              onPress={() => navigation.navigate("ModifcarLugar", { lugar: item })} // Navegar a la pantalla de modificación
+              onPress={() => navigation.navigate("ModifcarLugar", { lugar: item })}
             >
               <View style={styles.lugarInfo}>
                 <Text style={styles.lugarTitle}>{item.nombre}</Text>
@@ -71,7 +71,7 @@ export default function MostrarLugares({ navigation }) {
                 <Text style={styles.lugarDetails}>{item.horarios}</Text>
                 <Text style={styles.lugarLocation}>Ubicación: {item.coordenadas.latitud}, {item.coordenadas.longitud}</Text>
               </View>
-              <Icon name="edit" size={30} color="#00796b" style={styles.editIcon} /> {/* Ícono de editar */}
+              <Icon name="edit" size={30} color="#00796b" style={styles.editIcon} />
             </TouchableOpacity>
           )}
         />

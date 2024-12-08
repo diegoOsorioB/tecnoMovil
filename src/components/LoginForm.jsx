@@ -28,7 +28,7 @@ export default function RegisterForm({ changeForm }) {
       const auth = getAuth(app);
       signInWithEmailAndPassword(auth, formData.email, formData.password)
         .then((userCredential) => {
-          // Signed in
+          
           const user = userCredential.user;
           console.log(user);
         })
@@ -48,7 +48,7 @@ export default function RegisterForm({ changeForm }) {
       <TextInput
         style={[styles.input, formErrors.email && styles.error]}
         placeholder="Correo electrónico"
-        placeholderTextColor="#9ca3af" // Gris tenue
+        placeholderTextColor="#9ca3af" 
         onChange={e => setFormData({ ...formData, email: e.nativeEvent.text })}
       />
       <TextInput
@@ -70,7 +70,7 @@ export default function RegisterForm({ changeForm }) {
 
 const styles = StyleSheet.create({
   boton: {
-    backgroundColor: "#3b82f6", // Azul vibrante
+    backgroundColor: "#3b82f6",
     color: "#ffffff",
     fontSize: 18,
     marginTop: 30,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   botonSecondary: {
-    backgroundColor: "#ec4899", // Rosa fuerte
+    backgroundColor: "#ec4899",
     color: "#ffffff",
     fontSize: 16,
     marginTop: 20,
@@ -110,12 +110,12 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     width: "90%",
-    color: "#374151", // Gris oscuro
-    backgroundColor: "#f3f4f6", // Gris claro
+    color: "#374151",
+    backgroundColor: "#f3f4f6",
     justifyContent: "flex-end",
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#d1d5db", // Gris intermedio
+    borderColor: "#d1d5db",
     borderRadius: 25,
     paddingHorizontal: 20,
     marginBottom: 20,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   error: {
-    borderColor: "#ef4444", // Rojo intenso
+    borderColor: "#ef4444",
     borderWidth: 2,
   },
 });

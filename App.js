@@ -19,7 +19,7 @@ import ModifcarLugar from './src/components/ModifcarLugar';
 
 
 export default function App() {
-  const [user, setUser] = useState(undefined); // Estado de autenticación
+  const [user, setUser] = useState(undefined); 
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -31,7 +31,7 @@ export default function App() {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            setUser({ ...user, role: userData.role }); // Guardar rol en el estado
+            setUser({ ...user, role: userData.role }); 
           } else {
             console.error("Documento de usuario no encontrado");
           }
@@ -43,7 +43,7 @@ export default function App() {
       }
     });
   
-    return unsubscribe; // Limpieza del listener
+    return unsubscribe;
   }, []);
 
   if (user === undefined) {
@@ -62,11 +62,11 @@ export default function App() {
   );
 }
 
-// Componente de Tabs cuando el usuario está autenticado
+
 function LoggedInTabs({ user }) {
   const Tab = createBottomTabNavigator();
   const Stack = createStackNavigator();
-  // Función para cerrar sesión
+  
   const logout = () => {
     const auth = getAuth(app);
     signOut(auth)
@@ -139,9 +139,9 @@ function LoggedInTabs({ user }) {
   );
 }
 
-// Componentes de cada pantalla
+
 function AltasScreen({ navigation, route }) {
-  const { user } = route.params; // Recibe el usuario como parámetro
+  const { user } = route.params; 
 console.log('EL rol es ',user.role)
   return user?.role === 'Emprendedor' ? (
     <Mapa navigation={navigation}/>
@@ -172,7 +172,7 @@ function PerfilScreen({ logout, user }) {
   );
 }
 
-// Estilos
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

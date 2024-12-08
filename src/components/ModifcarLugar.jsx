@@ -21,7 +21,7 @@ export default function ModifcarLugar({ route, navigation }) {
         horarios,
       });
       Alert.alert("Lugar actualizado con éxito");
-      navigation.goBack(); // Volver a la pantalla anterior
+      navigation.goBack();
     } catch (error) {
       console.error("Error al actualizar lugar: ", error);
       Alert.alert("Error al actualizar lugar");
@@ -43,7 +43,7 @@ export default function ModifcarLugar({ route, navigation }) {
 
       <Text style={styles.label}>Descripción</Text>
       <TextInput
-        style={[styles.input, styles.textArea]} // Estilo personalizado para área de texto
+        style={[styles.input, styles.textArea]}
         value={descripcion}
         onChangeText={setDescripcion}
         placeholder="Descripción"
@@ -69,12 +69,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f9f9f9', // Fondo más suave para la pantalla de edición
+    backgroundColor: '#f9f9f9', 
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#00796b', // Color verde más destacado
+    color: '#00796b',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', // Fondo blanco para los inputs
   },
   textArea: {
-    height: 120, // Aumentamos la altura para la descripción
-    textAlignVertical: 'top', // Alineación del texto en la parte superior
+    height: 120, // Aumentamos la altura para la descripcion
+    textAlignVertical: 'top', // texto en la parte superior
   },
 });

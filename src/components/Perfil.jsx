@@ -116,6 +116,7 @@ export default function Perfil({ logout, user }) {
       </View>
 
       <Text style={styles.label}>Nombre</Text>
+      
       <TextInput
         style={styles.input}
         value={profileData.name}

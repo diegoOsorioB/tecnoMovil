@@ -159,36 +159,36 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Fondo más oscuro para el modal
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     modalContent: {
-        backgroundColor: '#ffffff', // Fondo blanco para el contenido del modal
+        backgroundColor: '#ffffff',
         padding: 20,
-        borderRadius: 15, // Borde redondeado
-        width: '85%', // Se ajusta para pantallas más grandes
-        maxWidth: 350, // Limita el tamaño máximo
+        borderRadius: 15,
+        width: '85%',
+        maxWidth: 350,
         alignItems: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 10,
-        elevation: 5, // Sombra sutil para darle profundidad
+        elevation: 5,
     },
     modalImage: {
         width: '100%',
         height: 180,
         borderRadius: 15,
-        marginBottom: 15, // Espaciado para la imagen
+        marginBottom: 15,
     },
     modalTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#333', // Texto oscuro para el título
-        marginBottom: 10, // Separación del título
+        color: '#333',
+        marginBottom: 10,
     },
     modalDescription: {
         fontSize: 16,
-        color: '#555', // Texto gris claro para la descripción
-        marginVertical: 8, // Separación entre párrafos
+        color: '#555', 
+        marginVertical: 8, 
         textAlign: 'center',
     },
     buttonContainer: {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         marginVertical: 8,
         borderRadius: 10,
-        backgroundColor: '#3b82f6', // Color primario de la app
+        backgroundColor: '#3b82f6',
         marginHorizontal: 5,
     },
 });
