@@ -18,38 +18,38 @@ export default function Mapa({ navigation }) {
     useEffect(() => {
         let locationSubscription;
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
+            let { status } = await Location.requestForegroundPermissionsAsync();// Solicita los permisos de ubicacion
             if (status !== 'granted') {
                 setErrorMsg('Permisos de ubicación denegados');
                 return;
             }
 
-            let initialLocation = await Location.getCurrentPositionAsync({});
-            setLocation(initialLocation.coords);
+            let initialLocation = await Location.getCurrentPositionAsync({}); //Ubicacion actual del usuario
+            setLocation(initialLocation.coords);//Guarda coordenas
 
             // Configuración inicial de la región del mapa
             setMapRegion({
                 latitude: initialLocation.coords.latitude,
                 longitude: initialLocation.coords.longitude,
-                latitudeDelta: 0.01,
+                latitudeDelta: 0.01, //ZOOM para el mapa
                 longitudeDelta: 0.01,
             });
 
             locationSubscription = await Location.watchPositionAsync(
                 {
-                    accuracy: Location.Accuracy.High,
-                    timeInterval: 1000,
+                    accuracy: Location.Accuracy.High, //Configura la precision en alta
+                    timeInterval: 1000, //Se actuliza cada segundo
                     distanceInterval: 0,
                 },
                 (newLocation) => {
-                    setLocation(newLocation.coords);
+                    setLocation(newLocation.coords); //Actualizacion de las coorednadas
                 }
             );
         })();
 
         return () => {
             if (locationSubscription) {
-                locationSubscription.remove();
+                locationSubscription.remove(); //Limpia la suscripcion al salir del componente
             }
         };
     }, []);
@@ -69,7 +69,7 @@ export default function Mapa({ navigation }) {
     };
 
     
-
+//Indicador de carga
     if (!location || !mapRegion) {
         return (
             <View style={styles.loadingContainer}>

@@ -48,7 +48,7 @@ export default function RegisterForm({ changeForm }) {
       <TextInput
         style={[styles.input, formErrors.email && styles.error]}
         placeholder="Correo electrónico"
-        placeholderTextColor="#9ca3af" // Gris tenue
+        placeholderTextColor="#9ca3af" 
         onChange={e => setFormData({ ...formData, email: e.nativeEvent.text })}
       />
       <TextInput
@@ -70,7 +70,7 @@ export default function RegisterForm({ changeForm }) {
 
 const styles = StyleSheet.create({
   boton: {
-    backgroundColor: "#3b82f6", // Azul vibrante
+    backgroundColor: "#3b82f6", 
     color: "#ffffff",
     fontSize: 18,
     marginTop: 30,
