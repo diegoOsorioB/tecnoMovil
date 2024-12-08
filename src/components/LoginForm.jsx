@@ -70,7 +70,7 @@ export default function RegisterForm({ changeForm }) {
 
 const styles = StyleSheet.create({
   boton: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: "#3b82f6", 
     color: "#ffffff",
     fontSize: 18,
     marginTop: 30,

@@ -43,7 +43,7 @@ export default function MapaUsuario({ navigation }) {
     }, []);
 
     const handleMarkerPress = (place) => {
-        setSelectedPlace(place);
+        setSelectedPlace(place); //Actualiza el lugar seleccionado
         setModalVisible(true);
     };
 
@@ -64,37 +64,40 @@ export default function MapaUsuario({ navigation }) {
     return (
         <View style={{ flex: 1 }}>
             <MapView
-                style={styles.map}
-                initialRegion={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
+    style={styles.map}
+    initialRegion={{
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+    }}
+    customMapStyle={[
+        {
+            featureType: 'poi',
+            stylers: [{ visibility: 'off' }],
+        },
+        {
+            featureType: 'poi.business',
+            stylers: [{ visibility: 'off' }],
+        },
+    ]}
+>
+    {places
+        .filter(place => place.activo) // Filtrar solo lugares activos
+        .map((place) => (
+            <Marker
+                key={place.id}
+                coordinate={{
+                    latitude: place.coordenadas.latitud,
+                    longitude: place.coordenadas.longitud,
                 }}
-                customMapStyle={[
-                    {
-                        featureType: 'poi',
-                        stylers: [{ visibility: 'off' }],
-                    },
-                    {
-                        featureType: 'poi.business',
-                        stylers: [{ visibility: 'off' }],
-                    },
-                ]}
-            >
-                {places.map((place) => (
-                    <Marker
-                        key={place.id}
-                        coordinate={{
-                            latitude: place.coordenadas.latitud,
-                            longitude: place.coordenadas.longitud,
-                        }}
-                        title={place.nombre}
-                        description={place.descripcion}
-                        onPress={() => handleMarkerPress(place)}
-                    />
-                ))}
-            </MapView>
+                title={place.nombre}
+                description={place.descripcion}
+                onPress={() => handleMarkerPress(place)}
+            />
+        ))}
+</MapView>
+
 
             {selectedPlace && (
                 <Modal

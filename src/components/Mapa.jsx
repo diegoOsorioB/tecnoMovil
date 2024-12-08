@@ -18,7 +18,7 @@ export default function Mapa({ navigation }) {
     useEffect(() => {
         let locationSubscription;
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
+            let { status } = await Location.requestForegroundPermissionsAsync();// Solicita los permisos de ubicacion
             if (status !== 'granted') {
                 setErrorMsg('Permisos de ubicación denegados');
                 return;
@@ -31,25 +31,25 @@ export default function Mapa({ navigation }) {
             setMapRegion({
                 latitude: initialLocation.coords.latitude,
                 longitude: initialLocation.coords.longitude,
-                latitudeDelta: 0.01,
+                latitudeDelta: 0.01, //ZOOM para el mapa
                 longitudeDelta: 0.01,
             });
 
             locationSubscription = await Location.watchPositionAsync(
                 {
-                    accuracy: Location.Accuracy.High,
-                    timeInterval: 1000,
+                    accuracy: Location.Accuracy.High, //Configura la precision en alta
+                    timeInterval: 1000, //Se actuliza cada segundo
                     distanceInterval: 0,
                 },
                 (newLocation) => {
-                    setLocation(newLocation.coords);
+                    setLocation(newLocation.coords); //Actualizacion de las coorednadas
                 }
             );
         })();
 
         return () => {
             if (locationSubscription) {
-                locationSubscription.remove();
+                locationSubscription.remove(); //Limpia la suscripcion al salir del componente
             }
         };
     }, []);

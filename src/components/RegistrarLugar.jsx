@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  Image,
+  Switch,
+} from 'react-native';
+import { getFirestore, collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios'; 
+import axios from 'axios';
 import app from '../utils/firebase';
 
 const db = getFirestore(app);
@@ -18,7 +28,8 @@ export default function RegistrarLugar({ route }) {
   const [location, setLocation] = useState(initialLocation);
   const [loadingLocation, setLoadingLocation] = useState(!initialLocation);
   const [imageUri, setImageUri] = useState(null);
-  const [uploading, setUploading] = useState(false); 
+  const [uploading, setUploading] = useState(false);
+  const [activo, setActivo] = useState(false);
 
   useEffect(() => {
     if (!initialLocation) {
@@ -59,7 +70,7 @@ export default function RegistrarLugar({ route }) {
   };
 
   const uploadImageToImgur = async (imageUri) => {
-    const clientId = '75c914ce9afcc6a'; 
+    const clientId = '75c914ce9afcc6a';
     const formData = new FormData();
     formData.append('image', {
       uri: imageUri,
@@ -76,7 +87,7 @@ export default function RegistrarLugar({ route }) {
         },
       });
       setUploading(false);
-      return response.data.data.link; 
+      return response.data.data.link;
     } catch (error) {
       setUploading(false);
       console.error("Error al subir imagen a Imgur:", error);
@@ -94,14 +105,25 @@ export default function RegistrarLugar({ route }) {
       return;
     }
 
-    const currentUser = auth.currentUser; 
+    const currentUser = auth.currentUser;
     if (!currentUser) {
       Alert.alert("Error", "No se pudo autenticar al usuario.");
       return;
     }
 
+    // Verificar cuántos lugares ha registrado el usuario
+    const lugaresQuery = query(
+      collection(db, "lugares"),
+      where("uid_usuario", "==", currentUser.uid)
+    );
+    const lugaresSnapshot = await getDocs(lugaresQuery);
+    if (lugaresSnapshot.size >= 2) {
+      Alert.alert("Limite alcanzado", "Solo puedes registrar hasta dos lugares.");
+      return;
+    }
+
     try {
-      const imageUrl = await uploadImageToImgur(imageUri); 
+      const imageUrl = await uploadImageToImgur(imageUri);
       await addDoc(collection(db, "lugares"), {
         nombre,
         horarios,
@@ -110,8 +132,9 @@ export default function RegistrarLugar({ route }) {
           latitud: location.latitude,
           longitud: location.longitude,
         },
-        imagen: imageUrl, 
-        uid_usuario: currentUser.uid, 
+        imagen: imageUrl,
+        activo, 
+        uid_usuario: currentUser.uid,
         fechaRegistro: new Date(),
       });
       Alert.alert("Éxito", "Lugar registrado correctamente.");
@@ -133,10 +156,8 @@ export default function RegistrarLugar({ route }) {
   return (
     <View style={styles.container}>
       <View style={styles.profileImageContainer}>
-        {imageUri ? (
+        {imageUri && (
           <Image source={{ uri: imageUri }} style={styles.imagen} />
-        ) : (
-          <Text>No se ha seleccionado una imagen</Text>
         )}
         <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
           <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
@@ -170,6 +191,16 @@ export default function RegistrarLugar({ route }) {
         />
       </View>
 
+      <View style={styles.switchContainer}>
+        <Text style={styles.text}>Activo</Text>
+        <Switch
+          value={activo}
+          onValueChange={setActivo}
+          thumbColor={activo ? "#00796b" : "#ccc"}
+          trackColor={{ false: "#ddd", true: "#80cbc4" }}
+        />
+      </View>
+
       {uploading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
@@ -182,66 +213,74 @@ export default function RegistrarLugar({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
+  // Mantén los estilos existentes
+  switchContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f9f9f9',
-  },
-  profileImageContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  imagen: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  imageButton: {
-    backgroundColor: '#3cf',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  imageButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  inputContainer: {
+    justifyContent: 'space-between',
     marginBottom: 20,
     width: '80%',
   },
-  inputtext: {
-    height: 45,
-    width: '100%',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingLeft: 10,
-    backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  text: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: '#333',
-  },
-  boton: {
-    backgroundColor: '#3cf',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 10,
-    marginTop: 20,
-    width: '80%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  botonText: {
-    color: 'white',
-    fontSize: 18,
-  },
+    container: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      padding: 20,
+      backgroundColor: '#f9f9f9',
+    },
+    profileImageContainer: {
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    imagen: {
+      width: 200,
+      height: 200,
+      borderRadius: 10,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: '#ccc',
+    },
+    imageButton: {
+      backgroundColor: '#3cf',
+      paddingVertical: 10,
+      paddingHorizontal: 30,
+      borderRadius: 10,
+      marginTop: 10,
+    },
+    imageButtonText: {
+      color: 'white',
+      fontSize: 16,
+    },
+    inputContainer: {
+      marginBottom: 20,
+      width: '80%',
+    },
+    inputtext: {
+      height: 45,
+      width: '100%',
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingLeft: 10,
+      backgroundColor: '#fff',
+      fontSize: 16,
+    },
+    text: {
+      fontSize: 16,
+      marginBottom: 5,
+      color: '#333',
+    },
+    boton: {
+      backgroundColor: '#3cf',
+      paddingVertical: 12,
+      paddingHorizontal: 40,
+      borderRadius: 10,
+      marginTop: 20,
+      width: '80%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    botonText: {
+      color: 'white',
+      fontSize: 18,
+    },
 });
