@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Modal, Button, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import app from '../utils/firebase';
 import * as Location from 'expo-location';
 
@@ -13,37 +13,43 @@ export default function MapaUsuario({ navigation }) {
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const fetchPlaces = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, "lugares"));
-            const lugares = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setPlaces(lugares);
-        } catch (error) {
-            console.error("Error al obtener lugares:", error);
-        }
-    };
-
-    const fetchUserLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            alert("Permisos de ubicación denegados");
-            return;
-        }
-
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation(location.coords);
-    };
-
+    // Escuchar cambios en tiempo real en la colección "lugares"
     useEffect(() => {
-        fetchPlaces();
+        const unsubscribe = onSnapshot(
+            collection(db, "lugares"),
+            (snapshot) => {
+                const lugares = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setPlaces(lugares);
+            },
+            (error) => {
+                console.error("Error al obtener lugares:", error);
+            }
+        );
+
+        return () => unsubscribe(); // Detener el listener al desmontar el componente
+    }, []);
+
+    // Obtener ubicación del usuario
+    useEffect(() => {
+        const fetchUserLocation = async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                alert("Permisos de ubicación denegados");
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location.coords);
+        };
+
         fetchUserLocation();
     }, []);
 
     const handleMarkerPress = (place) => {
-        setSelectedPlace(place); //Actualiza el lugar seleccionado
+        setSelectedPlace(place); // Actualiza el lugar seleccionado
         setModalVisible(true);
     };
 
@@ -64,40 +70,39 @@ export default function MapaUsuario({ navigation }) {
     return (
         <View style={{ flex: 1 }}>
             <MapView
-    style={styles.map}
-    initialRegion={{
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-    }}
-    customMapStyle={[
-        {
-            featureType: 'poi',
-            stylers: [{ visibility: 'off' }],
-        },
-        {
-            featureType: 'poi.business',
-            stylers: [{ visibility: 'off' }],
-        },
-    ]}
->
-    {places
-        .filter(place => place.activo) // Filtrar solo lugares activos
-        .map((place) => (
-            <Marker
-                key={place.id}
-                coordinate={{
-                    latitude: place.coordenadas.latitud,
-                    longitude: place.coordenadas.longitud,
+                style={styles.map}
+                initialRegion={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
                 }}
-                title={place.nombre}
-                description={place.descripcion}
-                onPress={() => handleMarkerPress(place)}
-            />
-        ))}
-</MapView>
-
+                customMapStyle={[
+                    {
+                        featureType: 'poi',
+                        stylers: [{ visibility: 'off' }],
+                    },
+                    {
+                        featureType: 'poi.business',
+                        stylers: [{ visibility: 'off' }],
+                    },
+                ]}
+            >
+                {places
+                    .filter(place => place.activo) // Filtrar solo lugares activos
+                    .map((place) => (
+                        <Marker
+                            key={place.id}
+                            coordinate={{
+                                latitude: place.coordenadas.latitud,
+                                longitude: place.coordenadas.longitud,
+                            }}
+                            title={place.nombre}
+                            description={place.descripcion}
+                            onPress={() => handleMarkerPress(place)}
+                        />
+                    ))}
+            </MapView>
 
             {selectedPlace && (
                 <Modal
@@ -190,8 +195,8 @@ const styles = StyleSheet.create({
     },
     modalDescription: {
         fontSize: 16,
-        color: '#555', 
-        marginVertical: 8, 
+        color: '#555',
+        marginVertical: 8,
         textAlign: 'center',
     },
     buttonContainer: {
