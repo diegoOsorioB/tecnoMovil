@@ -150,6 +150,7 @@ export default function RegistrarLugar({ route }) {
         <ActivityIndicator size="large" color="#0000ff" />
         <Text style={styles.text}>Obteniendo ubicación...</Text>
       </View>
+     
     );
   }
 

@@ -84,8 +84,8 @@ function LoggedInTabs({ user }) {
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
                 switch (route.name) {
-                  case 'Altas':
-                    iconName = focused ? 'person-add' : 'person-add-outline';
+                  case 'Mapa':
+                    iconName = focused ? 'map' : 'map-outline';
                     break;
                   case 'Eliminar':
                     iconName = focused ? 'trash' : 'trash-outline';
@@ -107,7 +107,7 @@ function LoggedInTabs({ user }) {
               tabBarInactiveTintColor: 'gray',
             })}
           >
-            <Tab.Screen name="Altas" component={AltasScreen} initialParams={{user}} />
+            <Tab.Screen name="Mapa" component={AltasScreen} initialParams={{user}} />
             {
               user?.role==='Emprendedor'?<Tab.Screen name="Info" component={ModificarScreen}/>:
               null
